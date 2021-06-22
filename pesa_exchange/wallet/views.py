@@ -77,6 +77,10 @@ def transact(request):
             facilitating_wallet = Wallet.objects.get(default_user)
             dr_entry = create_dr_entry(facilitating_wallet, amount, 'D')
             cr_entry = create_cr_entry(user_wallet, amount, 'W')
+            if user_wallet.balance < amount:
+                response_message = {
+                    "Balance":"Your Wallet Balance is lower than the Withdrawal amount of {}.".format(amount)}
+                return Response(data=response_message)
             try:
                 post_transaction(dr_entry, cr_entry)
                 user_wallet.balance -= amount
@@ -94,7 +98,10 @@ def transact(request):
                 transfer_to_wallet.currency)
             dr_entry = create_dr_entry(transfer_to_wallet, transfer_amount, 'D')
             cr_entry = create_cr_entry(user_wallet, amount, 'T')
-
+            if user_wallet.balance < amount:
+                response_message = {
+                    "Balance":"Your Wallet Balance is lower than the Transfer amount of {}.".format(amount)}
+                return Response(data=response_message)
             try:
                 post_transaction(dr_entry, cr_entry)
                 user_wallet.balance -= amount
@@ -106,5 +113,3 @@ def transact(request):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except Exception:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    

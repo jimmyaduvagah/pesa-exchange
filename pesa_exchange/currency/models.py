@@ -8,8 +8,9 @@ class Currency(AbstractBase):
     """Model to hold currencies and codes."""
 
     country = models.CharField(max_length=100)
-    currency_iso_code = models.CharField(max_length=5)
-    conversion_rate = models.DecimalField(max_digits=16, decimal_places=4)
+    currency_iso_code = models.CharField(max_length=5, unique=True)
+    conversion_rate = models.DecimalField(
+        max_digits=16, decimal_places=4, null=True, blank=True)
 
 
 def get_user_currency_rate(currency):
