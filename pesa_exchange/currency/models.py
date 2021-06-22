@@ -13,18 +13,17 @@ class Currency(AbstractBase):
 
 
 def get_user_currency_rate(currency):
-    currency_iso_code = currency.currency_iso_code
     api_key = "d870a9424ea744069b50cebbd3ebcf84"
     rates = coinoxr.Latest().get(base="USD")
     rates = rates.body['rates']
-    rate = rates.get(currency_iso_code, 0)
+    return rates.get(currency.currency_iso_code, 0)
 
 
 def get_user_currency_amount(rate, amount):
     if rate > 1:
-        return rate * amount
+        return amount * rate
     elif rate < 1:
-        return rate / amount
+        return amount / rate
     else:
         return amount
 
