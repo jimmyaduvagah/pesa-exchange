@@ -21,7 +21,7 @@ from rest_framework.authtoken import views
 
 from pesa_exchange.users.views import UserViewSet, UserRegisterViewSet, LoginViewSet
 from pesa_exchange.currency.views import CurrencyViewSet
-from pesa_exchange.wallet.views import WalletViewSet
+from pesa_exchange.wallet.views import WalletViewSet, transact
 
  
 
@@ -38,6 +38,7 @@ router.register(r'currencies', CurrencyViewSet)
 # urlpatterns = router.urls
 urlpatterns = [
     path('api/v1/', include(router.urls)),
+    path('api/v1/transact', transact),
     path('api/token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
 ]

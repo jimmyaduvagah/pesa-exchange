@@ -20,9 +20,8 @@ class Wallet(AbstractBase):
         on_delete=models.CASCADE)
     currency_default = models.ForeignKey(Currency,
         related_name='currency', on_delete=models.CASCADE, null=True, blank=True)
-    balance = models.FloatField(null=True, blank=True)
+    balance = models.FloatField(null=True, blank=True, default=0.0)
     status = models.CharField(null=True, blank=True, max_length=255)
-
 
 
 class AccountEntry(AbstractBase):
@@ -91,28 +90,3 @@ def post_transaction(dr_entry, cr_entry):
         "cr_entry": cr_entry, }
     transaction = Transaction(**kwargs)
     transaction.save()
-
-
-
-# When the user registers
-# Then create for them a default wallet with zero balance
-# Then create a facilitating account for posting entries
-
-# When the user deposits funds
-# Then debit money to his wallet
-# When he withdraws funds credit his wallet
-
-# example deposit
-# dr_entry = create_dr_entry(wallet, currency, amount, transaction_date)
-# cr_entry = create_cr_entry(facilitating_wallet_acc, currency, amount, transaction_date)
-
-
-# # example withdraw
-# dr_entry = create_dr_entry(facilitating_wallet_acc, currency, amount, transaction_date)
-# cr_entry = create_cr_entry(wallet, currency, amount, transaction_date)
-
-
-# # example Transfer
-# dr_entry = create_dr_entry(wallet_transferee, currency, amount, transaction_date)
-# cr_entry = create_cr_entry(wallet_owner, currency, amount, transaction_date)
-
