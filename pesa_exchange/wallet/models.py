@@ -7,8 +7,8 @@ from pesa_exchange.currency.models import Currency, AbstractBase
 
 
 TRANSACTION_TYPE = [
-    ('W', 'WITHDRAWAL'),
     ('D', 'DEPOSIT'),
+    ('W', 'WITHDRAWAL'),
     ('T', 'WIRE_TRANSFER'),
 ]
 
@@ -53,7 +53,7 @@ class Transaction(AbstractBase):
 
     @transaction.atomic
     def save(self, *args, **kwargs):
-        """Save a transaction AND it's accompanying entries."""
+        """Save a transaction AND it's account entries entries."""
 
         self.dr_entry.save()
         self.cr_entry.save()

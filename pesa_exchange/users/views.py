@@ -31,7 +31,6 @@ class UserRegisterViewSet(viewsets.ViewSet):
     def create(self, request):
         if request.method.lower() == 'post':
             if request.user.is_anonymous():
-                request.data['groups'] = []
                 serializer = RegistrationSerializer(data=request.data)
 
                 if serializer.is_valid(raise_exception=True):
