@@ -42,7 +42,7 @@ class User(PermissionsMixin, AbstractBaseUser):
     last_name = models.CharField(max_length=100, blank=False, null=False)
     other_names = models.CharField(max_length=255, null=True, blank=True)
     gender = models.CharField(null=True, blank=True, choices=GENDER_CHOICES, max_length=2)
-    profile_image = models.ImageField(null=True, blank=True, upload_to='avatars/')
+    # profile_image = models.ImageField(null=True, blank=True, upload_to='avatars/')
 
 
     is_staff = models.BooleanField(default=False)
@@ -104,7 +104,6 @@ class User(PermissionsMixin, AbstractBaseUser):
         }, settings.SECRET_KEY, algorithm='HS256')
 
         return token
-
 
     class Meta:
         ordering = ('first_name', 'last_name', )
