@@ -43,8 +43,6 @@ INSTALLED_APPS = [
 
     # project apps
     'pesa_exchange.users',
-    'pesa_exchange.currency',
-    'pesa_exchange.wallet'
 ]
 
 MIDDLEWARE = [
