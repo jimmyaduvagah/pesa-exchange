@@ -25,7 +25,7 @@ class Wallet(AbstractBase):
 
 
 class AccountEntry(AbstractBase):
-    """Account entries model."""
+    """Account entries model class."""
 
     account = models.ForeignKey(
         Wallet, related_name="account_entries", on_delete=models.PROTECT
@@ -47,9 +47,9 @@ class Transaction(AbstractBase):
         super().__init__(*args, **kwargs)
 
     debit_entry = models.ForeignKey(AccountEntry, related_name="debit_account_entry",
-                on_delete=models.PROTECT, null=True, blank=True)
+                on_delete=models.PROTECT)
     credit_entry = models.ForeignKey(AccountEntry, related_name="credit_account_entry",
-                on_delete=models.PROTECT, null=True, blank=True)
+                on_delete=models.PROTECT)
 
     @transaction.atomic
     def save(self, *args, **kwargs):

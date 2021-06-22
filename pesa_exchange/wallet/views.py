@@ -26,7 +26,7 @@ class WalletViewSet(viewsets.ModelViewSet):
 
 class AccountEntryViewSet(viewsets.ModelViewSet):
     """
-    A viewset for viewing and editing User instances.
+    A viewset for viewing and editing AccountEntry instances.
     """
 
     permission_classes = (IsAuthenticated,)
@@ -36,7 +36,7 @@ class AccountEntryViewSet(viewsets.ModelViewSet):
 
 class TransactionViewSet(viewsets.ModelViewSet):
     """
-    A viewset for viewing and editing User instances.
+    A viewset for viewing  Transaction instances.
     """
 
     permission_classes = (IsAuthenticated,)
@@ -56,7 +56,7 @@ def transact(request):
         amount = request.data.get('amount', {})
         rate = get_user_currency_rate(user_wallet.currency)
         amount = get_user_currency_amount(rate, amount)
-        transaction_type = request.data.pop('transaction_type', {})
+        transaction_type = request.data.get('transaction_type', {})
         if transaction_type == "deposit":
             default_user = User.objects.get(email="facilitatingUser@pesaexchange.com")
             facilitating_wallet = Wallet.objects.get(default_user)
