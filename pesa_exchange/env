@@ -1,0 +1,6 @@
+OPENEXCHANGERATEAPI='d870a9424ea744069b50cebbd3ebcf84'
+export SECRET_KEY='rklob1b&y4#i6bu)yhg!(t4zyw)072j-5+tf6^@fw@mzgd8&rk'
+export DATABASE_URL='postgres://sil:lis@127.0.0.1:5432/twiga_hostels'
+export DJANGO_SETTINGS_MODULE='hostels.config.settings'
+
+export FARMZONE_DATABASE_URL='postgres://sil:lis@127.0.0.1:5432/farmzone'

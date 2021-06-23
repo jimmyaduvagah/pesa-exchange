@@ -12,7 +12,7 @@ from pesa_exchange.wallet.serializer import (WalletSerializer,
 from pesa_exchange.wallet.models import (create_cr_entry, 
     create_dr_entry, post_transaction)
 from pesa_exchange.currency.models import (get_user_currency_rate, 
-    get_user_currency_amount, get_receiver_transfer_amount)
+    get_usd_amount, get_receiver_transfer_amount)
 
 class WalletViewSet(viewsets.ModelViewSet):
     """
@@ -50,18 +50,25 @@ def transact(request):
     function for all transactions a user can make on the system ie Deposit,
     Withdrawal, Transfer.
     """
-    if request.method == 'POST' and request.user:
-        user = request.user
+    amount = request.data.get('amount', 0)
+    user = request.user
+    if request.method == 'POST' and user and amount > 0:
         user_wallet = Wallet.objects.get(user)
-        amount = request.data.get('amount', 0)
-        rate = get_user_currency_rate(user_wallet.currency)
-        amount = get_user_currency_amount(rate, amount)
+
+        if not user_wallet.currency:
+            response_message = {
+                "Currency": "Set your default currency in your profile page before transacting"}
+            return Response(data=response_message)
+        
         transaction_type = request.data.get('transaction_type', None)
+        rate = get_user_currency_rate(user_wallet)
+        usd_amount = get_usd_amount(rate, amount)
+
         if transaction_type == "deposit":
             default_user = User.objects.get(email="facilitatingUser@pesaexchange.com")
             facilitating_wallet = Wallet.objects.get(default_user)
-            dr_entry = create_dr_entry(user_wallet, amount, 'D')
-            cr_entry = create_cr_entry(facilitating_wallet, amount, 'W')
+            dr_entry = create_dr_entry(user_wallet, usd_amount, 'D')
+            cr_entry = create_cr_entry(facilitating_wallet, usd_amount, 'W')
             try:
                 post_transaction(dr_entry, cr_entry)
                 user_wallet.balance += amount
@@ -75,8 +82,12 @@ def transact(request):
         elif transaction_type == "withdrawal":
             default_user = User.objects.get(email="facilitatingUser@pesaexchange.com")
             facilitating_wallet = Wallet.objects.get(default_user)
-            dr_entry = create_dr_entry(facilitating_wallet, amount, 'D')
-            cr_entry = create_cr_entry(user_wallet, amount, 'W')
+            dr_entry = create_dr_entry(facilitating_wallet, usd_amount, 'D')
+            cr_entry = create_cr_entry(user_wallet, usd_amount, 'W')
+            if user_wallet.balance < amount:
+                response_message = {
+                    "Balance":"Your Wallet Balance is lower than the Withdrawal amount of {}.".format(amount)}
+                return Response(data=response_message)
             try:
                 post_transaction(dr_entry, cr_entry)
                 user_wallet.balance -= amount
@@ -86,15 +97,18 @@ def transact(request):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except Exception:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-        else:
+        elif transaction_type == "transfer":
             transfer_to = request.data.pop('transfer_to', None)
             transfer_to_user = User.objects.get(email=transfer_to)
             transfer_to_wallet = Wallet.objects.get(owner=transfer_to_user)
-            transfer_amount = get_receiver_transfer_amount(rate, amount, 
-                transfer_to_wallet.currency)
-            dr_entry = create_dr_entry(transfer_to_wallet, transfer_amount, 'D')
-            cr_entry = create_cr_entry(user_wallet, amount, 'T')
-
+            transfer_rate = get_user_currency_rate(user_wallet)
+            transfer_amount = get_usd_amount(transfer_rate, usd_amount)
+            dr_entry = create_dr_entry(transfer_to_wallet, usd_amount, 'D')
+            cr_entry = create_cr_entry(user_wallet, usd_amount, 'T')
+            if user_wallet.balance < amount:
+                response_message = {
+                    "Balance":"Your Wallet Balance is lower than the Transfer amount of {}.".format(amount)}
+                return Response(data=response_message)
             try:
                 post_transaction(dr_entry, cr_entry)
                 user_wallet.balance -= amount
@@ -106,5 +120,9 @@ def transact(request):
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except Exception:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            response_message = {"WrongTransactionType":"Wrong Transactin Type."}
+            return Response(data=response_message)
 
-    
+    else:
+        return Response(status=status.HTTP_400_BAD_REQUEST)
