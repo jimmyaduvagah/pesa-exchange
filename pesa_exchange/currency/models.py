@@ -21,6 +21,6 @@ def get_user_currency_rate(currency):
 
 
 def get_usd_amount(rate, amount):
-    return amount * rate
+    return round(amount / rate, 4)
 
 
