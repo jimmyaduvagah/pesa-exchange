@@ -1,7 +1,11 @@
+import os
 import coinoxr
 from django.db import models
 
 from pesa_exchange.common.models import AbstractBase, CURRENCY_CODE
+
+
+CURRENCY_CONVERSION_API_KEY = os.getenv('OPENEXCHANGERATEAPI', None)
 
 
 class Currency(AbstractBase):
@@ -14,7 +18,7 @@ class Currency(AbstractBase):
 
 
 def get_user_currency_rate(currency):
-    coinoxr.app_id = "d870a9424ea744069b50cebbd3ebcf84"
+    coinoxr.app_id = CURRENCY_CONVERSION_API_KEY
     rates = coinoxr.Latest().get(base="USD")
     rates = rates.body['rates']
     return rates.get(currency.currency_iso_code, 0)
