@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 import os
+import dj_database_url
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,7 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-z+l1w@gu!7(u0ldn%&a03k@ot&c*p2%@g0@gu_ot$1+=l47ygz'
+SECRET_KEY = os.getenv(
+    'SECRET_KEY',
+    'bDgT-uc2ue2c3vg6RgCsyGO26oAbwK9HR1z6MSuzh_IdrAKXgi1ksuEb2V1-qiK94WwXJY5DSoBN7yS0cRC9jw')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,14 +86,7 @@ WSGI_APPLICATION = 'pesa_exchange.config.wsgi.application'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        "ENGINE": 'django.db.backends.postgresql_psycopg2',
-        "NAME": "pesa_exchange",
-        "USER": "mylaptop",
-        "PASSWORD": "asante#3",
-        "HOST": "localhost",
-        "PORT": '5432',
-    }
+    'default': dj_database_url.config(env='DATABASE_URL')
 }
 
 REST_FRAMEWORK = {

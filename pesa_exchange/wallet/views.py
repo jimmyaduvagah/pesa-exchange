@@ -5,7 +5,6 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from pesa_exchange.users.models import User
 from pesa_exchange.wallet.serializer import (WalletSerializer, 
     AccountEntrySerializer, TransactionSerializer, Wallet, AccountEntry,
     Transaction)
